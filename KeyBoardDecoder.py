@@ -1,7 +1,6 @@
 import os 
 import sys
 
-#先用Tshark提取出传输的键盘8位字节
 normalKeys = {
     "04":"a", "05":"b", "06":"c", "07":"d", "08":"e",
     "09":"f", "0a":"g", "0b":"h", "0c":"i", "0d":"j",
@@ -40,17 +39,20 @@ datafilename = "output.txt"
 dict = {"1":"usbhid.data" ,"2":"usb.capdata"}
 try:
     pcapfilepath = sys.argv[1]
-    srcIP = input("[+]Enter The srcIP u want extract:")
+    srcIP = input("[+]Enter The srcIP u want extract(example: 1.1.1) :")
     print("[+]which u want extract:")
     print("   1.usbhid.data")
     print("   2.usb.capdata")
-    usb_line = dict[input("Just Enter the number:")]
+    usb_line = dict[input(" Just Enter the number :")]
     os.system("tshark -r %s -T fields -Y 'usb.src == %s' -e %s  > %s" % (pcapfilepath ,srcIP ,usb_line ,datafilename))
 
     f = open(datafilename,"r")
     file_data = f.readlines()
+    f.close()
+    os.system(f"rm {datafilename}")
     flag = 0
     result = ""
+
     for i in range(len(file_data)):
         file = file_data[i]
         simple = file[4:6]
@@ -63,7 +65,7 @@ try:
                 result += normalKeys[simple].upper()
             elif flag % 2 == 0:
                 result += normalKeys[simple]
-        elif file[0:2] == "02" or file[0:2] == "20":
+        elif file[0:2] == "02" or file[0:2] == "20" and file[4:6] != "00":
             if shiftKeys[simple] == "<DEL>" or shiftKeys[simple] == "<DEL FORWARD>":
                 result = result[:-1]
             elif shiftKeys[simple] == "<CAP>":
@@ -72,12 +74,18 @@ try:
                 result += shiftKeys[simple].lower()
             elif flag % 2 == 0:
                 result += shiftKeys[simple]
-    if "<SPACE>" in result:
-        result = result.replace("<SPACE>" ," ")
-    if "<RET>" in result:
-        result = result.replace("<RET>" ,"\n")
+        elif file[0:2] == "02" and file[4:6] == "00":
+            flag += 1
+        if "<SPACE>" in result:
+            result = result.replace("<SPACE>" ," ")
+        if "<RET>" in result:
+            result = result.replace("<RET>" ,"\n")
+
     print("[+]here is ur result:\n",result)
 except:
+    if len(file_data[0]) != 16:
+        print("[-]sorry ,its not a KeyBoardFlow")
+        exit(0)
     print("[+]This script only can be used in Linux")
     print("[+]Usage : ")
     print("        python3 UsbKeyboardHacker.py data.pcap")
