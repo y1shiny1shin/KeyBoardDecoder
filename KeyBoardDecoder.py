@@ -56,6 +56,12 @@ try:
     for i in range(len(file_data)):
         file = file_data[i]
         simple = file[4:6]
+
+        ### 判断是否为有效press
+        if simple not in normalKeys or simple not in shiftKeys:
+            continue
+
+        ### 没有按下Shift的情况
         if file[0:2] == "00":
             if normalKeys[simple] == "<DEL>" or normalKeys[simple] == "<DEL FORWARD>":
                 result = result[:-1]
@@ -65,7 +71,9 @@ try:
                 result += normalKeys[simple].upper()
             elif flag % 2 == 0:
                 result += normalKeys[simple]
-        elif file[0:2] == "02" or file[0:2] == "20" and file[4:6] != "00":
+        
+        ### 按下了Shift的情况
+        elif (file[0:2] == "02" or file[0:2] == "20") and file[4:6] != "00":
             if shiftKeys[simple] == "<DEL>" or shiftKeys[simple] == "<DEL FORWARD>":
                 result = result[:-1]
             elif shiftKeys[simple] == "<CAP>":
@@ -74,25 +82,29 @@ try:
                 result += shiftKeys[simple].lower()
             elif flag % 2 == 0:
                 result += shiftKeys[simple]
-        elif file[0:2] == "02" and file[4:6] == "00":
-            flag += 1
+        
         if "<SPACE>" in result:
             result = result.replace("<SPACE>" ," ")
         if "<RET>" in result:
             result = result.replace("<RET>" ,"\n")
 
-    print("[+]here is ur result:\n",result)
 except:
-    if len(file_data[0]) != 16:
-        print("[-]sorry ,its not a KeyBoardFlow")
-        exit(0)
-    print("[+]This script only can be used in Linux")
-    print("[+]Usage : ")
+    for i in range(len(file_data)):
+        if len(file_data[i]) != 16:
+            print("[-] Sorry ,its not a KeyBoardFlow")
+            exit(0)
+    print("[+] This script only can be used in Linux")
+    print("[+] Usage : ")
     print("        python3 UsbKeyboardHacker.py data.pcap")
-    print("[+]Tips : ")
+    print("[+] Tips : ")
     print("        To use this python script , you must install the tshark first.")
     print("        You can use `sudo apt-get update | sudo apt-get install tshark` to install it")
-    print("[+]Author : ")
+    print("[+] Author : ")
     print("        y1shin QQ:2729913542")
     print("        If you have any questions , please contact me by QQ")
     print("        Thank you for using.")
+if result != "":
+    print("[+] Here is ur result:\n",result)
+    print("[+] The end")
+else:
+    print("[-] There is nothing to extract _(:з」∠)_")
