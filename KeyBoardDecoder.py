@@ -44,13 +44,15 @@ try:
     print("   1.usbhid.data")
     print("   2.usb.capdata")
     usb_line = dict[input(" Just Enter the number :")]
+    ### 执行Tshark命令
     os.system("tshark -r %s -T fields -Y 'usb.src == %s' -e %s  > %s" % (pcapfilepath ,srcIP ,usb_line ,datafilename))
 
     f = open(datafilename,"r")
     file_data = f.readlines()
     f.close()
     os.system(f"rm {datafilename}")
-    flag = 0
+    ### flag用来判断是否切换了大小写
+    flag = 0 
     result = ""
 
     for i in range(len(file_data)):
@@ -59,6 +61,10 @@ try:
 
         ### 判断是否为有效press
         if simple not in normalKeys or simple not in shiftKeys:
+            continue
+        
+        ### 排除重复press
+        if file[4:6] != "00" and file[6:8] != "00":
             continue
 
         ### 没有按下Shift的情况
@@ -104,9 +110,9 @@ except:
     print("        If you have any questions , please contact me by QQ")
     print("        Thank you for using.")
 
+### 输出最后的结果
 if result != "":
     print("[+] Here is ur result:\n",result)
     print("[+] The end")
-
 else:
     print("[-] There is nothing to extract _(:з」∠)_")
