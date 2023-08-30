@@ -72,7 +72,10 @@ try:
                 result += shiftKeys[simple].lower()
             elif flag % 2 == 0:
                 result += shiftKeys[simple]
-
+    if "<SPACE>" in result:
+        result = result.replace("<SPACE>" ," ")
+    if "<RET>" in result:
+        result = result.replace("<RET>" ,"\n")
     print("[+]here is ur result:\n",result)
 except:
     print("[+]This script only can be used in Linux")
