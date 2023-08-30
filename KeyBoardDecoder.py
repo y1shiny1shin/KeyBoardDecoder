@@ -103,8 +103,10 @@ except:
     print("        y1shin QQ:2729913542")
     print("        If you have any questions , please contact me by QQ")
     print("        Thank you for using.")
+
 if result != "":
     print("[+] Here is ur result:\n",result)
     print("[+] The end")
+
 else:
     print("[-] There is nothing to extract _(:з」∠)_")
