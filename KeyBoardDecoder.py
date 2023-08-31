@@ -35,6 +35,9 @@ shiftKeys = {
     "4a":"<HOME>","4b":"<PGUP>","4c":"<DEL FORWARD>","4d":"<END>","4e":"<PGDW>","4f":"<RIGHTARROW>",
     "50":"<LEFTARROW>","51":"<DOWNARROW>","52":"<UPARRWO>","00":""}
 
+### 实现方向键
+# def Arrow_attackment(pos:int ,strings:str) -> str:
+
 datafilename = "output.txt"
 dict = {"1":"usbhid.data" ,"2":"usb.capdata"}
 try:
@@ -78,8 +81,8 @@ try:
             elif flag % 2 == 0:
                 result += normalKeys[simple]
         
-        ### 按下了Shift的情况
-        elif (file[0:2] == "02" or file[0:2] == "20") and file[4:6] != "00":
+        ### 按下了Shift的情况,分别是左Shift 右Shift 双Shift
+        elif (file[0:2] == "02" or file[0:2] == "20" or file[0:2] == "44") and file[4:6] != "00":
             if shiftKeys[simple] == "<DEL>" or shiftKeys[simple] == "<DEL FORWARD>":
                 result = result[:-1]
             elif shiftKeys[simple] == "<CAP>":
@@ -109,10 +112,14 @@ except:
     print("        y1shin QQ:2729913542")
     print("        If you have any questions , please contact me by QQ")
     print("        Thank you for using.")
-
-### 输出最后的结果
+### 输出最后的结果 ，如果其中含有左右指令，那么就需要手动还原指令，包括<DEL> ,<DEL FROWARD>
 if result != "":
-    print("[+] Here is ur result:\n",result)
-    print("[+] The end")
+    if "<LEFTARROW>" in result:    
+        print("[+] Here is ur result:\n",result)
+        print("[+] The end")
+        print("[-] WARNING: If there are <LEAFTARROW>,<RIGHTARROW>,etc in the result, it may not be accurate.\n It is recommended to restore all commands before manually modifying them")
+    else:
+        print("[+] Here is ur result:\n",result)
+        print("[+] The end")
 else:
     print("[-] There is nothing to extract _(:з」∠)_")
